@@ -1,0 +1,27 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#2563eb;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#7c3aed;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background circle with gradient -->
+  <circle cx="256" cy="256" r="240" fill="url(#grad1)" stroke="#1e40af" stroke-width="16"/>
+  
+  <!-- Document icon -->
+  <path d="M160 128 L160 384 L352 384 L352 192 L288 128 Z" fill="white" opacity="0.95"/>
+  <path d="M288 128 L288 192 L352 192" fill="none" stroke="white" stroke-width="20" stroke-linejoin="round" opacity="0.95"/>
+  
+  <!-- AI spark/star icon -->
+  <circle cx="304" cy="304" r="24" fill="#fbbf24" opacity="0.95"/>
+  <path d="M304 264 L304 344 M264 304 L344 304 M276 276 L332 332 M332 276 L276 332" stroke="#fbbf24" stroke-width="12" opacity="0.95"/>
+  
+  <!-- Text lines -->
+  <rect x="192" y="176" width="64" height="12.8" rx="6.4" fill="white" opacity="0.8"/>
+  <rect x="192" y="208" width="48" height="12.8" rx="6.4" fill="white" opacity="0.7"/>
+  <rect x="192" y="240" width="56" height="12.8" rx="6.4" fill="white" opacity="0.6"/>
+  <rect x="192" y="272" width="40" height="12.8" rx="6.4" fill="white" opacity="0.5"/>
+  <rect x="192" y="304" width="48" height="12.8" rx="6.4" fill="white" opacity="0.4"/>
+  <rect x="192" y="336" width="32" height="12.8" rx="6.4" fill="white" opacity="0.3"/>
+</svg>

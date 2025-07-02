@@ -1,0 +1,27 @@
+<svg width="180" height="180" viewBox="0 0 180 180" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#2563eb;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#7c3aed;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background with rounded corners for iOS -->
+  <rect x="0" y="0" width="180" height="180" rx="36" ry="36" fill="url(#grad1)"/>
+  
+  <!-- Document icon -->
+  <path d="M56.25 45 L56.25 135 L123.75 135 L123.75 67.5 L101.25 45 Z" fill="white" opacity="0.95"/>
+  <path d="M101.25 45 L101.25 67.5 L123.75 67.5" fill="none" stroke="white" stroke-width="7.5" stroke-linejoin="round" opacity="0.95"/>
+  
+  <!-- AI spark/star icon -->
+  <circle cx="106.875" cy="106.875" r="8.4375" fill="#fbbf24" opacity="0.95"/>
+  <path d="M106.875 93.0625 L106.875 120.6875 M93.0625 106.875 L120.6875 106.875 M96.6 96.6 L117.15 117.15 M117.15 96.6 L96.6 117.15" stroke="#fbbf24" stroke-width="4.2" opacity="0.95"/>
+  
+  <!-- Text lines -->
+  <rect x="67.5" y="61.875" width="22.5" height="4.5" rx="2.25" fill="white" opacity="0.8"/>
+  <rect x="67.5" y="73.125" width="16.875" height="4.5" rx="2.25" fill="white" opacity="0.7"/>
+  <rect x="67.5" y="84.375" width="19.6875" height="4.5" rx="2.25" fill="white" opacity="0.6"/>
+  <rect x="67.5" y="95.625" width="14.0625" height="4.5" rx="2.25" fill="white" opacity="0.5"/>
+  <rect x="67.5" y="106.875" width="16.875" height="4.5" rx="2.25" fill="white" opacity="0.4"/>
+  <rect x="67.5" y="118.125" width="11.25" height="4.5" rx="2.25" fill="white" opacity="0.3"/>
+</svg>
