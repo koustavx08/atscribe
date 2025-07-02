@@ -99,7 +99,7 @@
     "socks": "latest",
     "sonner": "^1.7.1",
     "svix": "latest",
-    "tailwind-merge": "^2.5.5",
+    "tailwind-merge": "^3.3.1",
     "tailwindcss-animate": "^1.0.7",
     "use-sync-external-store": "latest",
     "vaul": "^0.9.6",
