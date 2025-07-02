@@ -84,7 +84,6 @@
 - **Jest** - Unit and integration testing
 - **Playwright** - End-to-end testing
 - **ESLint/Prettier** - Code quality and formatting
-- **Husky** - Git hooks for quality gates
 
 ---
 
