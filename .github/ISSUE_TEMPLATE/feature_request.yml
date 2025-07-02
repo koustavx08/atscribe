@@ -1,0 +1,108 @@
+name: Feature Request
+description: Suggest a new feature or enhancement for ATScribe
+title: '[FEATURE] '
+labels: ['enhancement', 'needs-triage']
+assignees: ['koustavx08']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for suggesting a new feature! 🚀
+        
+        Before you submit, please search existing issues to avoid duplicates.
+
+  - type: textarea
+    id: feature-description
+    attributes:
+      label: 🚀 Feature Description
+      description: A clear and concise description of the feature you'd like to see
+      placeholder: Describe the feature...
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem-solution
+    attributes:
+      label: 🎯 Problem & Solution
+      description: What problem does this feature solve? How would it work?
+      placeholder: |
+        **Problem:** What issue are you trying to solve?
+        **Solution:** How would this feature address the problem?
+    validations:
+      required: true
+
+  - type: textarea
+    id: use-cases
+    attributes:
+      label: 💡 Use Cases
+      description: Describe specific scenarios where this feature would be useful
+      placeholder: |
+        1. As a [user type], I want to [action] so that [benefit]
+        2. When [situation], this feature would help by [benefit]
+    validations:
+      required: true
+
+  - type: dropdown
+    id: feature-category
+    attributes:
+      label: 🏷️ Feature Category
+      description: Which area of the application does this feature relate to?
+      options:
+        - AI/Resume Generation
+        - User Interface
+        - Authentication
+        - Performance
+        - Accessibility
+        - API/Backend
+        - Testing
+        - Documentation
+        - Other
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: ⚡ Priority
+      description: How important is this feature to you?
+      options:
+        - Low - Nice to have
+        - Medium - Would improve experience
+        - High - Essential for my use case
+        - Critical - Blocking my workflow
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: 🔄 Alternatives Considered
+      description: Have you considered alternative solutions or workarounds?
+      placeholder: Describe any alternative solutions you've thought about...
+
+  - type: textarea
+    id: implementation-ideas
+    attributes:
+      label: 🛠️ Implementation Ideas
+      description: Do you have any ideas on how this could be implemented? (Optional)
+      placeholder: Technical suggestions, API designs, UI mockups, etc...
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: 📝 Additional Context
+      description: Add any other context, screenshots, or examples
+      placeholder: Any additional information that might help...
+
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: ✅ Confirmation
+      description: By submitting this feature request, you confirm that
+      options:
+        - label: I have searched existing issues and this is not a duplicate
+          required: true
+        - label: This feature would benefit other users, not just me
+          required: true
+        - label: I have provided clear use cases and reasoning
+          required: true
