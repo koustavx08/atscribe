@@ -55,7 +55,10 @@ export default function LinkedInImport({ onImport }: LinkedInImportProps) {
         if (urlRef.current) urlRef.current.value = '';
         if (fileRef.current) fileRef.current.value = '';
       } else {
-        setError(data.error || 'Import failed. Please try again.');
+        const errorMessage = data.error || 'Import failed. Please try again.';
+        const details = data.details ? ` Details: ${data.details}` : '';
+        setError(errorMessage + details);
+        console.error('Import failed:', data);
       }
     } catch (err) {
       setError('Network error. Please check your connection and try again.');

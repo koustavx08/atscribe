@@ -102,8 +102,43 @@ export function ResumeBuilder() {
 	const progress = ((currentStep + 1) / steps.length) * 100
 
 	const handleLinkedInImport = (data: any) => {
-		// TODO: Map AI-enhanced data to form fields
-		// setFormFields(data.extracted || {});
+		// Map imported LinkedIn data to resume form structure
+		if (data.extracted) {
+			const { extracted, aiEnhanced } = data;
+			
+			// Update personal info
+			if (extracted.name) {
+				setResumeData(prev => ({
+					...prev,
+					personalInfo: {
+						...prev.personalInfo,
+						fullName: extracted.name
+					}
+				}));
+			}
+			
+			// Update job description with AI summary if available
+			if (aiEnhanced?.summary) {
+				setResumeData(prev => ({
+					...prev,
+					jobDescription: aiEnhanced.summary
+				}));
+			}
+			
+			// Update skills
+			if (extracted.skills && extracted.skills.length > 0) {
+				setResumeData(prev => ({
+					...prev,
+					skills: {
+						technical: extracted.skills,
+						soft: prev.skills.soft
+					}
+				}));
+			}
+			
+			// Note: Experience and Education mapping would need more complex logic
+			// to properly parse the extracted data into the required format
+		}
 	}
 
 	return (
