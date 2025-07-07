@@ -50,10 +50,18 @@ export function ResumeBuilder() {
 	})
 
 	const updateResumeData = (section: keyof ResumeData, data: any) => {
-		setResumeData((prev) => ({
-			...prev,
-			[section]: data,
-		}))
+		setResumeData((prev) => {
+			// Ensure data is not null or undefined
+			const safeData = data || (section === 'skills' ? { technical: [], soft: [] } : 
+							   section === 'education' || section === 'experience' || section === 'projects' ? [] :
+							   section === 'personalInfo' ? { fullName: '', email: '', phone: '', location: '', linkedin: '', website: '' } :
+							   '');
+			
+			return {
+				...prev,
+				[section]: safeData,
+			};
+		});
 	}
 
 	const nextStep = () => {
@@ -103,41 +111,122 @@ export function ResumeBuilder() {
 
 	const handleLinkedInImport = (data: any) => {
 		// Map imported LinkedIn data to resume form structure
-		if (data.extracted) {
-			const { extracted, aiEnhanced } = data;
-			
-			// Update personal info
-			if (extracted.name) {
-				setResumeData(prev => ({
-					...prev,
-					personalInfo: {
-						...prev.personalInfo,
-						fullName: extracted.name
+		try {
+			if (data && data.extracted) {
+				const { extracted, aiEnhanced } = data;
+				
+				// Update personal info with safe string handling
+				if (extracted.name && typeof extracted.name === 'string') {
+					setResumeData(prev => ({
+						...prev,
+						personalInfo: {
+							...prev.personalInfo,
+							fullName: extracted.name.trim()
+						}
+					}));
+				}
+				
+				// Update job description with AI summary if available
+				if (aiEnhanced?.summary && typeof aiEnhanced.summary === 'string') {
+					setResumeData(prev => ({
+						...prev,
+						jobDescription: aiEnhanced.summary.trim()
+					}));
+				}
+				
+				// Update skills with safe array handling
+				if (Array.isArray(extracted.skills) && extracted.skills.length > 0) {
+					const validSkills: string[] = (extracted.skills as string[])
+						.filter((skill: string) => skill && typeof skill === 'string' && skill.trim().length > 0)
+						.map((skill: string) => skill.trim());
+					
+					if (validSkills.length > 0) {
+						setResumeData(prev => ({
+							...prev,
+							skills: {
+								technical: validSkills,
+								soft: prev.skills.soft
+							}
+						}));
 					}
-				}));
-			}
-			
-			// Update job description with AI summary if available
-			if (aiEnhanced?.summary) {
-				setResumeData(prev => ({
-					...prev,
-					jobDescription: aiEnhanced.summary
-				}));
-			}
-			
-			// Update skills
-			if (extracted.skills && extracted.skills.length > 0) {
-				setResumeData(prev => ({
-					...prev,
-					skills: {
-						technical: extracted.skills,
-						soft: prev.skills.soft
+				}
+				
+				// Update experience with safe handling
+				if (Array.isArray(extracted.experience) && extracted.experience.length > 0) {
+					interface ImportedExperience {
+						id: string
+						company: string
+						position: string
+						location: string
+						startDate: string
+						endDate: string
+						current: boolean
+						description: string
 					}
-				}));
+
+					const validExperience: ImportedExperience[] = (extracted.experience as string[])
+						.filter((exp: string) => exp && typeof exp === 'string' && exp.trim().length > 0)
+						.map((exp: string, index: number): ImportedExperience => ({
+							id: `imported-exp-${index}`,
+							company: '',
+							position: exp.trim().split('\n')[0] || 'Position',
+							location: '',
+							startDate: '',
+							endDate: '',
+							current: false,
+							description: exp.trim()
+						}));
+					
+					if (validExperience.length > 0) {
+						setResumeData(prev => ({
+							...prev,
+							experience: [...prev.experience, ...validExperience]
+						}));
+					}
+				}
+				
+				// Update education with safe handling
+				if (Array.isArray(extracted.education) && extracted.education.length > 0) {
+					interface ImportedEducation {
+						id: string
+						institution: string
+						degree: string
+						field: string
+						startDate: string
+						endDate: string
+						gpa: string
+						description: string
+					}
+
+					const validEducation: ImportedEducation[] = (extracted.education as string[])
+						.filter((edu: string) => edu && typeof edu === 'string' && edu.trim().length > 0)
+						.map((edu: string, index: number): ImportedEducation => ({
+							id: `imported-edu-${index}`,
+							institution: edu.trim().split('\n')[0] || 'Institution',
+							degree: edu.trim().split('\n')[1] || 'Degree',
+							field: '',
+							startDate: '',
+							endDate: '',
+							gpa: '',
+							description: edu.trim()
+						}));
+					
+					if (validEducation.length > 0) {
+						setResumeData(prev => ({
+							...prev,
+							education: [...prev.education, ...validEducation]
+						}));
+					}
+				}
+				
+				console.log('LinkedIn import successful', { extracted, aiEnhanced });
+			} else {
+				console.warn('No extracted data found in LinkedIn import response');
 			}
-			
-			// Note: Experience and Education mapping would need more complex logic
-			// to properly parse the extracted data into the required format
+		} catch (error) {
+			console.error('Error processing LinkedIn import data:', error);
+			// Show user-friendly error message
+			// You could add a toast notification here
 		}
 	}
 
