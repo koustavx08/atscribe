@@ -8,6 +8,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Plus, Trash2 } from "lucide-react"
 import type { Experience } from "@/types/resume"
+import { ResumeSectionChat, ChatMessage } from "@/components/resume-section-chat"
+import { useState } from "react"
 
 interface ExperienceStepProps {
   data: Experience[]
@@ -15,6 +17,8 @@ interface ExperienceStepProps {
 }
 
 export function ExperienceStep({ data, onUpdate }: ExperienceStepProps) {
+  const [chatHistories, setChatHistories] = useState<Record<string, ChatMessage[]>>({});
+
   const addExperience = () => {
     const newExperience: Experience = {
       id: Date.now().toString(),
@@ -36,6 +40,11 @@ export function ExperienceStep({ data, onUpdate }: ExperienceStepProps) {
   const removeExperience = (id: string) => {
     onUpdate(data.filter((exp) => exp.id !== id))
   }
+
+  const handleChatUpdate = (id: string, newContent: string, chatHistory: ChatMessage[]) => {
+    updateExperience(id, "description", newContent);
+    setChatHistories((prev) => ({ ...prev, [id]: chatHistory }));
+  };
 
   return (
     <div className="space-y-6">
@@ -110,12 +119,18 @@ export function ExperienceStep({ data, onUpdate }: ExperienceStepProps) {
               <Textarea
                 value={experience.description}
                 onChange={(e) => updateExperience(experience.id, "description", e.target.value)}
-                placeholder="• Developed and maintained web applications using React and Node.js&#10;• Collaborated with cross-functional teams to deliver features&#10;• Improved application performance by 30%"
+                placeholder="• Developed and maintained web applications using React and Node.js\n• Collaborated with cross-functional teams to deliver features\n• Improved application performance by 30%"
                 rows={5}
               />
               <p className="text-sm text-gray-600 dark:text-gray-400">
                 Use bullet points to describe your achievements and responsibilities. Focus on quantifiable results.
               </p>
+              <ResumeSectionChat
+                sectionType="experience"
+                sectionContent={experience.description}
+                initialChatHistory={chatHistories[experience.id] || []}
+                onUpdate={(newContent, chatHistory) => handleChatUpdate(experience.id, newContent, chatHistory)}
+              />
             </div>
           </CardContent>
         </Card>

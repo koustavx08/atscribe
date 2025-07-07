@@ -5,11 +5,134 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Download, FileText, Loader2 } from "lucide-react"
+import { PDFDownloadLink, Document, Page, Text, View, StyleSheet, Font } from '@react-pdf/renderer';
 import type { ResumeData } from "@/types/resume"
 
 interface ResumePDFExportProps {
   resumeData: ResumeData
 }
+
+Font.register({ family: 'Arial', src: undefined });
+
+const styles = StyleSheet.create({
+  page: {
+    fontFamily: 'Arial',
+    fontSize: 11,
+    padding: 32,
+    color: '#222',
+    backgroundColor: '#fff',
+    lineHeight: 1.5,
+  },
+  section: { marginBottom: 16 },
+  header: { textAlign: 'center', marginBottom: 12 },
+  name: { fontSize: 20, fontWeight: 'bold', color: '#2563eb' },
+  contact: { fontSize: 10, color: '#666', marginTop: 4 },
+  title: { fontSize: 13, fontWeight: 'bold', color: '#2563eb', marginBottom: 4 },
+  itemHeader: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 2 },
+  position: { fontWeight: 'bold' },
+  company: { fontStyle: 'italic', color: '#666' },
+  date: { color: '#666', fontSize: 9 },
+  description: { marginTop: 2, whiteSpace: 'pre-line' },
+  skills: { flexDirection: 'row', flexWrap: 'wrap', gap: 4, marginTop: 4 },
+  skillTag: { backgroundColor: '#f3f4f6', borderRadius: 2, padding: 2, fontSize: 9, marginRight: 4, border: '1px solid #e5e7eb' },
+});
+
+const ResumePDF = ({ data }: { data: ResumeData }) => (
+  <Document>
+    <Page size="A4" style={styles.page}>
+      <View style={styles.header}>
+        <Text style={styles.name}>{data.personalInfo.fullName}</Text>
+        <Text style={styles.contact}>
+          {data.personalInfo.email} • {data.personalInfo.phone}
+          {data.personalInfo.location ? ` • ${data.personalInfo.location}` : ''}
+          {data.personalInfo.linkedin ? ` • ${data.personalInfo.linkedin}` : ''}
+          {data.personalInfo.website ? ` • ${data.personalInfo.website}` : ''}
+        </Text>
+      </View>
+      {data.summary && (
+        <View style={styles.section}>
+          <Text style={styles.title}>Professional Summary</Text>
+          <Text>{data.summary}</Text>
+        </View>
+      )}
+      {data.experience.length > 0 && (
+        <View style={styles.section}>
+          <Text style={styles.title}>Professional Experience</Text>
+          {data.experience.map((exp, i) => (
+            <View key={i} style={{ marginBottom: 8 }}>
+              <View style={styles.itemHeader}>
+                <View>
+                  <Text style={styles.position}>{exp.position}</Text>
+                  <Text style={styles.company}>{exp.company}{exp.location ? ` • ${exp.location}` : ''}</Text>
+                </View>
+                <Text style={styles.date}>{exp.startDate} - {exp.current ? 'Present' : exp.endDate}</Text>
+              </View>
+              <Text style={styles.description}>{exp.description}</Text>
+            </View>
+          ))}
+        </View>
+      )}
+      {data.education.length > 0 && (
+        <View style={styles.section}>
+          <Text style={styles.title}>Education</Text>
+          {data.education.map((edu, i) => (
+            <View key={i} style={{ marginBottom: 8 }}>
+              <View style={styles.itemHeader}>
+                <View>
+                  <Text style={styles.position}>{edu.degree}{edu.field ? ` in ${edu.field}` : ''}</Text>
+                  <Text style={styles.company}>{edu.institution}</Text>
+                </View>
+                <Text style={styles.date}>{edu.startDate} - {edu.endDate}</Text>
+              </View>
+              {edu.gpa && <Text>GPA: {edu.gpa}</Text>}
+              {edu.description && <Text style={styles.description}>{edu.description}</Text>}
+            </View>
+          ))}
+        </View>
+      )}
+      {data.projects.length > 0 && (
+        <View style={styles.section}>
+          <Text style={styles.title}>Projects</Text>
+          {data.projects.map((project, i) => (
+            <View key={i} style={{ marginBottom: 8 }}>
+              <Text style={styles.position}>{project.name}</Text>
+              {project.technologies && <Text style={styles.company}>Technologies: {project.technologies}</Text>}
+              <Text style={styles.description}>{project.description}</Text>
+              {(project.url || project.github) && (
+                <Text style={{ color: '#2563eb', fontSize: 9 }}>
+                  {project.url ? `Live Demo: ${project.url}` : ''}
+                  {project.url && project.github ? ' • ' : ''}
+                  {project.github ? `GitHub: ${project.github}` : ''}
+                </Text>
+              )}
+            </View>
+          ))}
+        </View>
+      )}
+      {(data.skills.technical.length > 0 || data.skills.soft.length > 0) && (
+        <View style={styles.section}>
+          <Text style={styles.title}>Skills</Text>
+          {data.skills.technical.length > 0 && (
+            <View style={styles.skills}>
+              <Text style={{ fontWeight: 'bold', marginRight: 4 }}>Technical:</Text>
+              {data.skills.technical.map((skill, i) => (
+                <Text key={i} style={styles.skillTag}>{skill}</Text>
+              ))}
+            </View>
+          )}
+          {data.skills.soft.length > 0 && (
+            <View style={styles.skills}>
+              <Text style={{ fontWeight: 'bold', marginRight: 4 }}>Soft:</Text>
+              {data.skills.soft.map((skill, i) => (
+                <Text key={i} style={styles.skillTag}>{skill}</Text>
+              ))}
+            </View>
+          )}
+        </View>
+      )}
+    </Page>
+  </Document>
+);
 
 export function ResumePDFExport({ resumeData }: ResumePDFExportProps) {
   const [selectedTemplate, setSelectedTemplate] = useState("modern")
@@ -21,303 +144,6 @@ export function ResumePDFExport({ resumeData }: ResumePDFExportProps) {
     { id: "minimal", name: "Minimal", description: "Simple and elegant design" },
     { id: "creative", name: "Creative", description: "Unique design for creative roles" },
   ]
-
-  const generatePDF = async () => {
-    setIsGenerating(true)
-
-    try {
-      // Create HTML content for PDF generation
-      const htmlContent = generateHTMLResume(resumeData, selectedTemplate)
-
-      // Create a new window for PDF generation
-      const printWindow = window.open('', '_blank')
-      if (!printWindow) {
-        throw new Error('Unable to open print window. Please check your popup blocker.')
-      }
-
-      // Write the HTML content to the new window
-      printWindow.document.write(htmlContent)
-      printWindow.document.close()
-
-      // Wait for content to load
-      await new Promise(resolve => setTimeout(resolve, 1000))
-
-      // Focus on the print window and trigger print dialog
-      printWindow.focus()
-      printWindow.print()
-
-      // Close the window after printing
-      setTimeout(() => {
-        printWindow.close()
-      }, 1000)
-
-      // Note: This uses the browser's built-in print-to-PDF functionality
-      // Users will need to select "Save as PDF" in their print dialog
-    } catch (error) {
-      console.error("Error generating PDF:", error)
-      alert("Failed to generate PDF. Please ensure popups are allowed and try again.")
-    } finally {
-      setIsGenerating(false)
-    }
-  }
-
-  const generateHTMLResume = (data: ResumeData, template: string): string => {
-    return `
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>${data.personalInfo.fullName} - Resume</title>
-        <style>
-            body {
-                font-family: 'Arial', sans-serif;
-                line-height: 1.6;
-                color: #333;
-                max-width: 800px;
-                margin: 0 auto;
-                padding: 20px;
-                background: white;
-                font-size: 12px;
-            }
-            .header {
-                text-align: center;
-                border-bottom: 2px solid #2563eb;
-                padding-bottom: 20px;
-                margin-bottom: 30px;
-            }
-            .header h1 {
-                margin: 0;
-                font-size: 2.5em;
-                color: #2563eb;
-            }
-            .contact-info {
-                margin-top: 10px;
-                font-size: 0.9em;
-                color: #666;
-            }
-            .section {
-                margin-bottom: 30px;
-                page-break-inside: avoid;
-            }
-            .section h2 {
-                color: #2563eb;
-                border-bottom: 1px solid #e5e7eb;
-                padding-bottom: 5px;
-                margin-bottom: 15px;
-                font-size: 1.2em;
-                page-break-after: avoid;
-            }
-            .experience-item, .education-item, .project-item {
-                margin-bottom: 20px;
-                page-break-inside: avoid;
-            }
-            .experience-header {
-                display: flex;
-                justify-content: space-between;
-                align-items: flex-start;
-                margin-bottom: 5px;
-            }
-            .position {
-                font-weight: bold;
-                font-size: 1.1em;
-            }
-            .company {
-                color: #666;
-                font-style: italic;
-            }
-            .date {
-                color: #666;
-                font-size: 0.9em;
-            }
-            .description {
-                margin-top: 10px;
-                white-space: pre-line;
-            }
-            .skills {
-                display: flex;
-                flex-wrap: wrap;
-                gap: 8px;
-            }
-            .skill-tag {
-                background: #f3f4f6;
-                padding: 4px 8px;
-                border-radius: 4px;
-                font-size: 0.9em;
-                border: 1px solid #e5e7eb;
-            }
-            /* PDF-specific styles */
-            @media print {
-                body { 
-                    margin: 0; 
-                    padding: 15px; 
-                    font-size: 11px;
-                    max-width: none;
-                }
-                .header { 
-                    page-break-after: avoid; 
-                    margin-bottom: 20px;
-                }
-                .section { 
-                    page-break-inside: avoid; 
-                    margin-bottom: 20px;
-                }
-                .experience-item, .education-item, .project-item {
-                    page-break-inside: avoid;
-                    margin-bottom: 15px;
-                }
-                h2 {
-                    page-break-after: avoid;
-                }
-                /* Ensure links are visible in PDF */
-                a {
-                    color: #2563eb;
-                    text-decoration: none;
-                }
-                /* Hide any interactive elements in PDF */
-                button, input, select, textarea {
-                    display: none;
-                }
-            }
-            @page {
-                margin: 0.5in;
-                size: letter;
-            }
-        </style>
-    </head>
-    <body>
-        <div class="header">
-            <h1>${data.personalInfo.fullName}</h1>
-            <div class="contact-info">
-                ${data.personalInfo.email} • ${data.personalInfo.phone}
-                ${data.personalInfo.location ? ` • ${data.personalInfo.location}` : ""}
-                ${data.personalInfo.linkedin ? ` • ${data.personalInfo.linkedin}` : ""}
-                ${data.personalInfo.website ? ` • ${data.personalInfo.website}` : ""}
-            </div>
-        </div>
-
-        ${
-          data.experience.length > 0
-            ? `
-        <div class="section">
-            <h2>Professional Experience</h2>
-            ${data.experience
-              .map(
-                (exp) => `
-                <div class="experience-item">
-                    <div class="experience-header">
-                        <div>
-                            <div class="position">${exp.position}</div>
-                            <div class="company">${exp.company} • ${exp.location}</div>
-                        </div>
-                        <div class="date">${exp.startDate} - ${exp.current ? "Present" : exp.endDate}</div>
-                    </div>
-                    <div class="description">${exp.description}</div>
-                </div>
-            `,
-              )
-              .join("")}
-        </div>
-        `
-            : ""
-        }
-
-        ${
-          data.education.length > 0
-            ? `
-        <div class="section">
-            <h2>Education</h2>
-            ${data.education
-              .map(
-                (edu) => `
-                <div class="education-item">
-                    <div class="experience-header">
-                        <div>
-                            <div class="position">${edu.degree} ${edu.field ? `in ${edu.field}` : ""}</div>
-                            <div class="company">${edu.institution}</div>
-                        </div>
-                        <div class="date">${edu.startDate} - ${edu.endDate}</div>
-                    </div>
-                    ${edu.gpa ? `<div>GPA: ${edu.gpa}</div>` : ""}
-                    ${edu.description ? `<div class="description">${edu.description}</div>` : ""}
-                </div>
-            `,
-              )
-              .join("")}
-        </div>
-        `
-            : ""
-        }
-
-        ${
-          data.projects.length > 0
-            ? `
-        <div class="section">
-            <h2>Projects</h2>
-            ${data.projects
-              .map(
-                (project) => `
-                <div class="project-item">
-                    <div class="position">${project.name}</div>
-                    ${project.technologies ? `<div class="company">Technologies: ${project.technologies}</div>` : ""}
-                    <div class="description">${project.description}</div>
-                    ${
-                      project.url || project.github
-                        ? `
-                        <div style="margin-top: 5px;">
-                            ${project.url ? `<a href="${project.url}">Live Demo</a>` : ""}
-                            ${project.url && project.github ? " • " : ""}
-                            ${project.github ? `<a href="${project.github}">GitHub</a>` : ""}
-                        </div>
-                    `
-                        : ""
-                    }
-                </div>
-            `,
-              )
-              .join("")}
-        </div>
-        `
-            : ""
-        }
-
-        ${
-          data.skills.technical.length > 0 || data.skills.soft.length > 0
-            ? `
-        <div class="section">
-            <h2>Skills</h2>
-            ${
-              data.skills.technical.length > 0
-                ? `
-                <div style="margin-bottom: 15px;">
-                    <strong>Technical Skills:</strong>
-                    <div class="skills" style="margin-top: 8px;">
-                        ${data.skills.technical.map((skill) => `<span class="skill-tag">${skill}</span>`).join("")}
-                    </div>
-                </div>
-            `
-                : ""
-            }
-            ${
-              data.skills.soft.length > 0
-                ? `
-                <div>
-                    <strong>Soft Skills:</strong>
-                    <div class="skills" style="margin-top: 8px;">
-                        ${data.skills.soft.map((skill) => `<span class="skill-tag">${skill}</span>`).join("")}
-                    </div>
-                </div>
-            `
-                : ""
-            }
-        </div>
-        `
-            : ""
-        }
-    </body>
-    </html>
-    `
-  }
 
   return (
     <Card>
@@ -368,19 +194,27 @@ export function ResumePDFExport({ resumeData }: ResumePDFExportProps) {
                 </div>
               </div>
 
-              <Button onClick={generatePDF} disabled={isGenerating} size="lg" className="w-full">
-                {isGenerating ? (
-                  <>
-                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    Preparing PDF...
-                  </>
-                ) : (
-                  <>
-                    <Download className="h-4 w-4 mr-2" />
-                    Export as PDF
-                  </>
+              <PDFDownloadLink
+                document={<ResumePDF data={resumeData} />}
+                fileName={`${resumeData.personalInfo.fullName.replace(/\s+/g, '_')}_Resume.pdf`}
+                className="w-full"
+              >
+                {({ loading }) => (
+                  <Button size="lg" className="w-full" disabled={loading}>
+                    {loading ? (
+                      <>
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                        Preparing PDF...
+                      </>
+                    ) : (
+                      <>
+                        <Download className="h-4 w-4 mr-2" />
+                        Download as PDF
+                      </>
+                    )}
+                  </Button>
                 )}
-              </Button>
+              </PDFDownloadLink>
             </div>
         </div>
 
