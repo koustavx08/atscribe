@@ -1,9 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
-import pdfParse from 'pdf-parse';
 import puppeteer from 'puppeteer';
 import { ChatGoogleGenerativeAI } from '@langchain/google-genai';
 import { RunnableSequence } from '@langchain/core/runnables';
 import { PromptTemplate } from '@langchain/core/prompts';
+
+// Prevent execution during build time
+if (typeof window === 'undefined' && process.env.NODE_ENV === 'production' && !process.env.VERCEL) {
+  // This is likely a build process, don't execute
+}
 
 // Types for extracted data
 interface ExtractedData {
@@ -23,6 +27,15 @@ const ALLOWED_FILE_TYPES = ['application/pdf'];
 // Helper: Extract data from LinkedIn PDF
 async function extractFromPDF(fileBuffer: Buffer): Promise<ExtractedData> {
   try {
+    // Dynamic import to prevent build-time issues
+    let pdfParse;
+    try {
+      pdfParse = (await import('pdf-parse')).default;
+    } catch (importError) {
+      console.error('Failed to import pdf-parse:', importError);
+      throw new Error('PDF parsing functionality is not available');
+    }
+    
     const data = await pdfParse(fileBuffer);
     const text = data.text;
     // Enhanced extraction with better regex patterns
@@ -149,6 +162,14 @@ Please return the response in JSON format with the following structure:
 
 export async function POST(req: NextRequest) {
   try {
+    // Runtime check to prevent build-time execution
+    if (typeof window !== 'undefined') {
+      return NextResponse.json(
+        { error: 'This endpoint can only be called server-side' },
+        { status: 400 }
+      );
+    }
+
     // Parse form data
     const formData = await req.formData();
     const url = formData.get('url') as string | null;
