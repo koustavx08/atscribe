@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from 'next/server';
 import { GoogleGenerativeAI } from '@langchain/google-genai';
 import { ConversationalRetrievalChain } from 'langchain/chains';
 import { MemoryVectorStore } from 'langchain/vectorstores/memory';
-import { ChatPromptTemplate } from 'langchain/prompts';
 
 // Types for request/response
 interface RefineSectionRequest {
@@ -19,8 +18,8 @@ export async function POST(req: NextRequest) {
   const context = `Section Type: ${sectionType}\nCurrent Content: ${sectionContent}`;
   const history = chatHistory.map(h => `${h.role === 'user' ? 'User' : 'AI'}: ${h.content}`).join('\n');
 
-  // Prompt template
-  const prompt = ChatPromptTemplate.fromTemplate(`You are an expert resume writer. Given the following resume section and chat history, respond to the user's request and return only the revised section content.\n\n{context}\n\nChat History:\n{history}\n\nUser: {userMessage}\nAI:`);
+  // Use a plain string prompt
+  const prompt = `You are an expert resume writer. Given the following resume section and chat history, respond to the user's request and return only the revised section content.\n\n${context}\n\nChat History:\n${history}\n\nUser: ${userMessage}\nAI:`;
 
   // Set up Gemini model
   const model = new GoogleGenerativeAI({
