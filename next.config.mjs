@@ -2,11 +2,7 @@
 const nextConfig = {
   // Remove standalone output for development to avoid Windows symlink issues
   // output: 'standalone', // Uncomment for production Docker builds
-  experimental: {
-    serverComponentsExternalPackages: ['mongoose'],
-    // Fix for Windows development
-    esmExternals: 'loose',
-  },
+  serverExternalPackages: ['mongoose'],
   eslint: {
     ignoreDuringBuilds: true,
   },

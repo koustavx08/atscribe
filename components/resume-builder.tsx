@@ -16,7 +16,7 @@ import { SkillsStep } from "@/components/resume-steps/skills-step"
 import { JobDescriptionStep } from "@/components/resume-steps/job-description-step"
 import { ReviewStep } from "@/components/resume-steps/review-step"
 import type { ResumeData } from "@/types/resume"
-import LinkedInImport from "../linkedin-import"
+import LinkedInImport from "@/components/linkedin-import"
 
 const steps = [
 	{ id: "personal", title: "Personal Info", description: "Basic information and contact details" },
